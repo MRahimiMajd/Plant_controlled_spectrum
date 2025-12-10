@@ -138,8 +138,8 @@ def pca_biplot(results, pairs = [(0, 1), (2, 3)], arrow_scale = 4,
         # Density 
         kde = gaussian_kde(np.vstack([x, y]))
 
-        pad_x = 0.05 * (x.max() - x.min())
-        pad_y = 0.05 * (y.max() - y.min())
+        pad_x = 0.1 * (x.max() - x.min())
+        pad_y = 0.1 * (y.max() - y.min())
         x_min, x_max = x.min() - pad_x, x.max() + pad_x
         y_min, y_max = y.min() - pad_y, y.max() + pad_y
 
