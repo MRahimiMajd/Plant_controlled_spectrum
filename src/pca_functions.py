@@ -277,7 +277,7 @@ def plot_3d_double_arrow(ax, start, end, color='k', length_ratio=0.08, linewidth
 #############################################################
 def compute_group_vector(components, features, group):
     idx = {f: i for i, f in enumerate(features)}
-    unit_vecs = []
+    vecs = []
 
     for name in group:
         flip = name.startswith('-')
@@ -287,16 +287,15 @@ def compute_group_vector(components, features, group):
             continue
 
         v = components[:3, idx[feat]]
-        v = v / np.linalg.norm(v)
         
         if flip: v = -v
-        unit_vecs.append(v)
+        vecs.append(v)
 
-    if not unit_vecs:
+    if not vecs:
         return None
 
     # Mean composite direction
-    mean_vec = np.mean(unit_vecs, axis=0)
+    mean_vec = np.mean(vecs, axis=0)
     mean_vec = mean_vec / np.linalg.norm(mean_vec) 
 
     return mean_vec
@@ -342,7 +341,7 @@ def plot_pca_3d(results, scale=5, pad=0.2, is_residual=True,
         ax.quiver(0, 0, 0, *vec, color=c2,
                   arrow_length_ratio=0.15, linewidth=2)
 
-        offset = 0.25 if feat in ['ln', 'N'] else 0.05
+        offset = 0.05
         label_pos = vec + offset * np.linalg.norm(vec)
         ax.text(*label_pos, feat, color='k', fontsize=12, zorder=100)
 
@@ -381,8 +380,15 @@ fig_dir ='figs'
 os.makedirs(fig_dir, exist_ok=True)
 
 data_complete = load_Carmona_et_al_data()
+
+################ To remove the outliers
+z_data = (data_complete - data_complete.mean()) / data_complete.std()
+mask = ~(np.abs(z_data) > 4).any(axis=1)
+data_complete = data_complete[mask]
+################
+
 conditional_res = conditional_pca(data_complete,group_control=['SRL','ssd','la'])
 pca_biplot(conditional_res,is_residual=True)
-plot_pca_3d(conditional_res,is_residual=True)
+plot_pca_3d(conditional_res,is_residual=True, azim0=-15, elev0=20)
 
 
