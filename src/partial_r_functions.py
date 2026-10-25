@@ -145,6 +145,13 @@ def maximum_cover(df_corr, k=3, weight_col='square_diff',top_n=10,print_stat=Tru
 ###############################################################################
 # 1. Load Data
 data = load_Carmona_et_al_data()
+
+################ To remove the outliers
+z_data = (data - data.mean()) / data.std()
+mask = ~(np.abs(z_data) > 4).any(axis=1)
+data = data[mask]
+################
+
 partial_res = build_pairwise_df(data, print_stat = True)
 ###############################################################################
 solutions = maximum_cover(partial_res, k=3, weight_col='square_diff')
